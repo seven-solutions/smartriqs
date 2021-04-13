@@ -1,28 +1,28 @@
-<!-- 
+<!--
 
 Copyright 2019 Andras Molnar
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-and associated documentation files (the "Software"), to deal in the Software without 
-restriction, including without limitation the rights to use, copy, modify, merge, publish, 
-distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
 Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or 
+The above copyright notice and this permission notice shall be included in all copies or
 substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING 
-BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-The licensee undertakes to mention the name SMARTRIQS, the name of the licensor (Andras Molnar) 
-and to cite the following article in all publications in which results of experiments conducted 
-with the Software are published: 
+The licensee undertakes to mention the name SMARTRIQS, the name of the licensor (Andras Molnar)
+and to cite the following article in all publications in which results of experiments conducted
+with the Software are published:
 
-Molnar, A. (2019). 
-“SMARTRIQS: A Simple Method Allowing Real-Time Respondent Interaction in Qualtrics Surveys". 
+Molnar, A. (2019).
+“SMARTRIQS: A Simple Method Allowing Real-Time Respondent Interaction in Qualtrics Surveys".
 Journal of Behavioral and Experimental Finance, 22, 161-169. doi: 10.1016/j.jbef.2019.03.005
 
 
@@ -32,7 +32,7 @@ Journal of Behavioral and Experimental Finance, 22, 161-169. doi: 10.1016/j.jbef
 
 // This function adds data to the datafile.
 function addData($handle_name,$data, $datafile){
-	$handle_name = fopen($datafile, "a"); 
+	$handle_name = fopen($datafile, "a");
 		fputcsv($handle_name, $data);
     fclose($handle_name);
 }
@@ -41,20 +41,20 @@ function addData($handle_name,$data, $datafile){
 // This function checks if the data received via the query string matches the header of the existing datafile
 function checkHeader($dataTable, $groupSize, $numStages, $rolesArray){
 	global $headerGroupSize, $headerNumStages, $headerRolesArray;
-	
+
 	$importedHeader = implode(",",$dataTable[0]);
 	$headerGroupSize = substr_count($importedHeader, "Last active");
 	$headerNumStages = substr_count($importedHeader, "#") / (max(1,$headerGroupSize));
-	
+
 	for ($i = 0; $i < $headerGroupSize; $i++){
 		$headerRolesArray[$i] = $dataTable[0][3 + ($headerNumStages + 2) * $i];
 	}
-	
+
 	if ($headerGroupSize != $groupSize) 	{errorMessage("202");}
 	if ($headerNumStages != $numStages) 	{errorMessage("203");}
 	if ($rolesArray != NULL){
 		if ($headerRolesArray !== $rolesArray) 	{errorMessage("204");}
-	}	
+	}
 }
 
 
@@ -101,16 +101,16 @@ function importData($data){
 // This function selects the participant's group
 function selectGroup($dataTable, $groupSize, $participantID, $playerIndexArray){
 	global $found, $participantIndex, $groupData;
-	
+
 	for ($i = 0; $i < count($dataTable); $i++) {
 		$thisGroup = $dataTable[$i];
 
 		for ($j = 0; $j < $groupSize; $j++){
 			if ($thisGroup[$playerIndexArray[$j]] == $participantID) {
-				$found = 1;	
-				$participantIndex = $playerIndexArray[$j]; 
+				$found = 1;
+				$participantIndex = $playerIndexArray[$j];
 				$groupData = $thisGroup;
-			}	
+			}
 		}
     }
 }
@@ -121,7 +121,7 @@ function errorMessage($errorID) {
 	global $status, $errorCount, $researcherID, $studyID, $participantID, $groupSize, $numStages, $participantRole, $participantCondition,
 	$roles, $conditions, $botMatch, $headerGroupSize, $headerNumStages, $headerRolesArray, $rolesArray, $dropInactivePlayers, $displayStyle,
 	$sendStage, $getStage, $getValuesArray, $defaultValuesArray;
-	
+
 	$errorCount++; // Increment error counter whenever this function is called
 
 	###	001-099 Missing input errors
@@ -135,7 +135,7 @@ function errorMessage($errorID) {
 	if ($errorID == "008"){$messageText = "Stage number is missing.";}
 	#if ($errorID == "009"){$messageText = "Value is missing.";}
 	if ($errorID == "010"){$messageText = "Group ID is missing.";}
-	
+
 	###	101-199 Invalid data errors
 	if ($errorID == "101"){$messageText = "Invalid researcher ID (" . $researcherID . "). This ID does not exist. Make sure that you used the correct ID. The ID is case sensitive.<br>If you think the ID you provided is correct, please contact the site admin at: support@smartriqs.com.";}
 	if ($errorID == "102"){$messageText = "Invalid study ID (" . $studyID . "). This study does not exist. Make sure that you used the correct ID. The ID is case sensitive.";}
@@ -145,8 +145,8 @@ function errorMessage($errorID) {
 	if ($errorID == "106"){$messageText = "Invalid participant role (" . $participantRole . "). Participant role must be 'random' or one of the following: " . $roles . ". Role is case sensitive.";}
 	if ($errorID == "107"){$messageText = "Invalid value for 'stage' (" . $sendStage  . $getStage . "). Stage should be an integer between 1 and " . $numStages . ".";};
 	if ($errorID == "108"){$messageText = "Invalid participant condition (" . $participantCondition . "). Participant condition must be 'random' or one of the following:<br>" . $conditions . ". <br>Condition name is case sensitive.";}
-	
-	
+
+
 	###	201-299 Data mismatch errors
 	if ($errorID == "201"){$messageText = "Group size (" . $groupSize . ") does not match the number of roles (" . count($rolesArray) . ").";}
 	if ($errorID == "202"){$messageText = "The group size in the existing data (" . $headerGroupSize . ") does not match the group size defined for this participant (" . $groupSize . ").";}
@@ -156,8 +156,8 @@ function errorMessage($errorID) {
 	#if ($errorID == "206"){$messageText = "The number of default responses (" . count($defaultValuesArray) . ") is different from the number of values to be retrieved (" . count($getValuesArray) . "). These two numbers must be the same.";}
 
 
-	
-	###	401-599 Reserved (default browser error codes) ###### 
+
+	###	401-599 Reserved (default browser error codes) ######
 	#														#
 	#	It is not recommended to assign any error codes 	#
 	#	between 401-599 to avoid any confusions. 			#
@@ -169,8 +169,13 @@ function errorMessage($errorID) {
 	#	503 -- Service Unavailable							#
 	#														#
 	#########################################################
-	
+
 	// Add error to status
 	$status = $status . "<p style='font-weight:bold; color:red'>ERROR " . $errorID . " : " . $messageText . "</p></br>";
+}
+
+function savePath(string $base_path, string $path_part) : string {
+	$resolved = realpath($base_path . '/' . $path_part);
+	return $resolved && str_starts_with($resolved, $base_path) ? $resolved : false;
 }
 ?>
