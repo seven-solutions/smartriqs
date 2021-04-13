@@ -29,6 +29,7 @@ Journal of Behavioral and Experimental Finance, 22, 161-169. doi: 10.1016/j.jbef
 -->
 
 <?php
+ini_set('open_basedir', __DIR__);
 header("Access-Control-Allow-Origin: *");
 $status = null;
 $errorCount = 0;

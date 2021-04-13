@@ -29,7 +29,9 @@ Journal of Behavioral and Experimental Finance, 22, 161-169. doi: 10.1016/j.jbef
 -->
 
 <?php
-header("Access-Control-Allow-Origin: *"); 		
+ini_set('open_basedir', __DIR__);
+
+header("Access-Control-Allow-Origin: *");
 $status = "";				// Status variable. Used for communcation between Qualtrics and the server.
 $found = 0;					// Dummy variable: 0 if participantID is not in study database, 1 if participantID is already in database.
 $participantValue = NULL;
