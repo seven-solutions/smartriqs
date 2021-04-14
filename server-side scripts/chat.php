@@ -61,17 +61,17 @@ else{
 	// If study chat folder does not exist, create it:
 	if (!$chatLogFolder){
 		$chatLogFolder = $researcherID . '/' . basename($studyID) . "_chat_logs";
-		mkdir($chatLogFolder, 0664);
-		chmod($chatLogFolder, 0664);
+		mkdir($chatLogFolder, 0770);
+		chmod($chatLogFolder, 0770);
 	}
 
 	$groupChatFolder = savePath($chatLogFolder, "/Group_" . $groupID);
 
 	// If group chat folder does not exist, create it:
 	if (!$groupChatFolder){
-		$groupChatFolder = $$chatLogFolder . "/Group_" . basename($groupID);
-		mkdir($groupChatFolder, 0664);
-		chmod($groupChatFolder, 0664);
+		$groupChatFolder = $chatLogFolder . "/Group_" . basename($groupID);
+		mkdir($groupChatFolder, 0770);
+		chmod($groupChatFolder, 0770);
 	}
 
 	// Retrieve chat log file
