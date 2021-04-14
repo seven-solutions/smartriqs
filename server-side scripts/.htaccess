@@ -1,0 +1,13 @@
+Order deny,allow
+Deny from all
+
+<Files ~ "\.php$">
+    Allow from all
+</Files>
+
+<Files create_researcher.php>
+AuthType Basic
+AuthName "Authenticate to create researcher"
+AuthUserFile path/to/.htpasswd
+Require valid-user
+</Files>
