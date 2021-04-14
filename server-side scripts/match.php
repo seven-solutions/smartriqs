@@ -29,6 +29,8 @@ Journal of Behavioral and Experimental Finance, 22, 161-169. doi: 10.1016/j.jbef
 -->
 
 <?php
+ini_set('open_basedir', __DIR__);
+
 header("Access-Control-Allow-Origin: *");
 $status = "";		// Status variable. Used for communcation between Qualtrics and the server
 $found = 0;			// Dummy variable: 0 if participantID is not in study database, 1 if participantID is already in database
@@ -40,7 +42,7 @@ include "functions.php";
 // Get values from query string
 if (empty($_GET["timeZone"]))				{$timeZone = 0;} 				else {$timeZone = 				$_GET["timeZone"];}
 $currentTime = getTime($timeZone);
-if (empty($_GET["researcherID"])) 			{errorMessage("001");} 			else {$researcherID = 			$_GET["researcherID"];}
+if (empty($_GET["researcherID"])) 			{errorMessage("001");} 			else {$researcherID = 			savePath(__DIR__, $_GET["researcherID"]);}
 if (empty($_GET["studyID"])) 				{errorMessage("002");} 			else {$studyID = 				$_GET["studyID"];}
 if (empty($_GET["participantID"])) 			{errorMessage("003");} 			else {$participantID = 			$_GET["participantID"];}
 if (empty($_GET["groupSize"])) 				{errorMessage("004");} 			else {$groupSize = 				$_GET["groupSize"];}
@@ -54,7 +56,7 @@ if (empty($_GET["conditions"]))    			{$conditionsString = "";}		else {$conditio
 if (empty($_GET["participantCondition"]))	{$participantCondition = "";}	else {$participantCondition = 	$_GET["participantCondition"];}
 
 // Check whether the imported values are valid
-if (file_exists($researcherID) == FALSE)	{errorMessage("101");};
+if (!$researcherID)	{errorMessage("101");}; // savePath returns false, if the file does not resist
 if (in_array($groupSize, array(2,3,4,5,6,7,8)) == FALSE)	{errorMessage("104");}
 if (count($rolesArray) != $groupSize)		{errorMessage("201");}
 if (in_array($participantRole, $rolesArray) == FALSE and $participantRole != "random")	{errorMessage("106");}
@@ -64,7 +66,6 @@ if (count($conditionsArray) > 1 and in_array($participantCondition, $conditionsA
 // MATCHING
 if ($errorCount == 0) {
 	$playerIndexArray = getPlayerIndexes($groupSize, $numStages);	// Get player indexes
-
 	$datafile = savePath($researcherID, $studyID . "_rawdata.csv"); 	// Get datafile
 
 	if (!$datafile) { // Check if the study database already exists. If not, then create it (and add header).
