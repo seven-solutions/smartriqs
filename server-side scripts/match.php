@@ -54,12 +54,14 @@ if (empty($_GET["conditions"]))    			{$conditionsString = "";}		else {$conditio
 if (empty($_GET["participantCondition"]))	{$participantCondition = "";}	else {$participantCondition = 	$_GET["participantCondition"];}
 
 // Check whether the imported values are valid
-if (file_exists($researcherID) == FALSE)	{errorMessage("101");};
-if (in_array($groupSize, array(2,3,4,5,6,7,8)) == FALSE)	{errorMessage("104");}
-if (count($rolesArray) != $groupSize)		{errorMessage("201");}
-if (in_array($participantRole, $rolesArray) == FALSE and $participantRole != "random")	{errorMessage("106");}
-if (filter_var($numStages, FILTER_VALIDATE_INT) == FALSE or $numStages < 1)	{errorMessage("105");}
-if (count($conditionsArray) > 1 and in_array($participantCondition, $conditionsArray) == FALSE and $participantCondition != "random")	{errorMessage("108");}
+if ($errorCount == 0) {
+	if (file_exists($researcherID) == FALSE)	{errorMessage("101");};
+	if (in_array($groupSize, array(2,3,4,5,6,7,8)) == FALSE)	{errorMessage("104");}
+	if (count($rolesArray) != $groupSize)		{errorMessage("201");}
+	if (in_array($participantRole, $rolesArray) == FALSE and $participantRole != "random")	{errorMessage("106");}
+	if (filter_var($numStages, FILTER_VALIDATE_INT) == FALSE or $numStages < 1)	{errorMessage("105");}
+	if (count($conditionsArray) > 1 and in_array($participantCondition, $conditionsArray) == FALSE and $participantCondition != "random")	{errorMessage("108");}
+}
 
 // MATCHING
 if ($errorCount == 0) {
@@ -315,7 +317,7 @@ function createOutputFields($status, $groupID, $participantCondition, $participa
 	echo "<participantCondition>" 	. $participantCondition 	. "</participantCondition>";
 	echo "<participantRole>"		. $participantRole			. "</participantRole>";
 	echo "<openSpots>"				. $openSpots				. "</openSpots>";
-	echo "<bots>"					. implode(",",$bots)		. "</bots>";
+	echo "<bots>"					. (isset($bots) ? implode(",",$bots) : '')	. "</bots>";
 	echo "<errorCount>"				. $errorCount				. "</errorCount>";
 	echo "<timeOutLog>" 			. $log 						. "</timeOutLog>";
 }
