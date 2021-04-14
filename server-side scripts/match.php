@@ -72,31 +72,32 @@ if ($errorCount == 0) {
 		$datafile = $researcherID . '/' . basename($studyID) . '_rawdata.csv';
 		addHeader($datafile, $groupSize, $numStages, $rolesArray);
 	}
-	else {									// Otherwise -- if study database already exists --, import it and check if participantID is already in the database.
-		$dataTable = importData($datafile);
-		checkHeader($dataTable, $groupSize, $numStages, $rolesArray);
 
-		$allGroups = []; 		// An array that lists all group IDs in the study.
-		$openGroups = [];		// An array that lists all group IDs in the study, which have at least one open role.
-		$suitableGroups = [];	// An array that lists all group IDs in the study, which have at least one open role, and are suitable for the participant.
-		$selectedGroup = 0;		// The ID of a suitable group to which the participant will be added. 0 if there are no suitable groups.
+	$dataTable = importData($datafile);
+	checkHeader($dataTable, $groupSize, $numStages, $rolesArray);
 
-		// Look up participant in data table
-		for ($i = 0; $i < count($dataTable); $i++) {
-            $thisGroup = $dataTable[$i];
+	$allGroups = []; 		// An array that lists all group IDs in the study.
+	$openGroups = [];		// An array that lists all group IDs in the study, which have at least one open role.
+	$suitableGroups = [];	// An array that lists all group IDs in the study, which have at least one open role, and are suitable for the participant.
+	$selectedGroup = 0;		// The ID of a suitable group to which the participant will be added. 0 if there are no suitable groups.
+	$bots = [];
 
-			for ($j = 0; $j < $groupSize; $j++){
-				if ($thisGroup[$playerIndexArray[$j]] == $participantID) {
-					$found = 1;
-					$groupData = $thisGroup;
-				}
-       		}
-			// Check whether the current group is listed among all groups, whether it is open, and whether it is suitable for the participant
-			checkGroupAvailability($thisGroup, $playerIndexArray, $participantCondition, $participantRole, $rolesArray);
-        }
-        // Check if there is any suitable group. If yes, select the first suitable group
-		if (count($suitableGroups) > 0) {$selectedGroup = $suitableGroups[0];}
+	// Look up participant in data table
+	for ($i = 0; $i < count($dataTable); $i++) {
+		$thisGroup = $dataTable[$i];
+
+		for ($j = 0; $j < $groupSize; $j++){
+			if ($thisGroup[$playerIndexArray[$j]] == $participantID) {
+				$found = 1;
+				$groupData = $thisGroup;
+			}
+		}
+		// Check whether the current group is listed among all groups, whether it is open, and whether it is suitable for the participant
+		checkGroupAvailability($thisGroup, $playerIndexArray, $participantCondition, $participantRole, $rolesArray);
 	}
+	// Check if there is any suitable group. If yes, select the first suitable group
+	if (count($suitableGroups) > 0) {$selectedGroup = $suitableGroups[0];}
+
 }
 
 // If there are still no errors, take an action: (1) retrieve participant data, (2) join group, or (3) crate new group.
@@ -129,6 +130,8 @@ if ($errorCount == 0){
 	}
 
 	$oldTime = $groupData[$participantIndex + 1];					// Retrieve old timestamp
+
+	if(!isset($updateData)) $updateData = null;
 
 	// If still waiting and the record is less than 10 seconds old, do nothing...
 	if ($status == "waiting" and ($currentTime - $oldTime < 10)){	}
